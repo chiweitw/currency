@@ -1,5 +1,5 @@
 var DAMPING = 0.2,
-    GRAVITY = -0.6,
+    GRAVITY = 0.5,
     MOUSE_SIZE = 100,
     SPEED = 0.2;
 
@@ -13,8 +13,8 @@ window.requestAnimFrame =
 window.onload = function () {
     canvas = document.getElementById('myCanvas');
     ctx = canvas.getContext('2d');  
-    canvas.width = 300;
-    canvas.height = 500;
+    canvas.width = 800;
+    canvas.height = 800;
     getAllCurrency();
     update();
 }
@@ -28,15 +28,13 @@ function getAllCurrency() {
     request.onload = function() {
         var data = JSON.parse(this.response).quotes;
         ['USDXAU', 'USDBTC'].forEach(e => delete data[e]);
-        console.log(data);
         var country = Object.keys(data);
         var currencyUSDUarget = Object.values(data);
         var currencyTargetUSD = currencyUSDUarget.map(function(element) {
-            return (10*Math.sqrt(1/element));
+            return (30*Math.sqrt(1/element));
         });
-        for (i=0; i<currencyTargetUSD.length; i++) add_ball(currencyTargetUSD[i]);
+        for (i=0; i<currencyTargetUSD.length; i++) add_ball(currencyTargetUSD[i], country[i]);
     }
-
     request.send();
 }
 
@@ -48,7 +46,7 @@ function getAllCurrency() {
 
 
 
-var Ball = function(x, y, radius) {
+var Ball = function(x, y, radius, id) {
 
     this.x = x;
     this.y = y;
@@ -60,16 +58,19 @@ var Ball = function(x, y, radius) {
     this.fy = 0;
 
     this.radius = radius;
+
+    this.id = id;
 };
 
-var add_ball = function (r) {
+var add_ball = function (r, id) {
       var x = Math.random() * (canvas.width - 60) + 30,
           y = Math.random() * (canvas.height - 60) + 30,
-          r = r || 10 + Math.random() * 20,
+          r = r,
           s = true,
-          i = balls.length;
+          i = balls.length,
+          id = id;
   
-      if (s) balls.push(new Ball(x, y, r));
+      if (s) balls.push(new Ball(x, y, r, id));
 }
 
 Ball.prototype.apply_force = function(delta) {
@@ -98,7 +99,12 @@ Ball.prototype.draw = function(ctx) {
 
     ctx.beginPath();
     ctx.arc(this.x, this.y, this.radius, 0, TWO_PI);
+    ctx.fillStyle = 'rgba(255,255,255,0.7)';
     ctx.fill();
+    ctx.font = "8px helvetica";
+    ctx.beginPath();
+    ctx.fillStyle = 'rgba(0,0,0,0.7)';
+    ctx.fillText(this.id, this.x, this.y);
 };
 
 
@@ -169,8 +175,6 @@ var update = function() {
     
   
     ctx.clearRect(0, 0, canvas.width, canvas.height);
-
-    ctx.fillStyle = 'rgba(255,255,255,0.7)';
     var i = balls.length;
     while (i--) balls[i].draw(ctx);
   
