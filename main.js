@@ -1,13 +1,51 @@
-var NUM_BALLS = 150,
-    DAMPING = 0.2,
+var DAMPING = 0.2,
     GRAVITY = -0.6,
     MOUSE_SIZE = 100,
     SPEED = 0.2;
 
-var canvas, ctx, TWO_PI = Math.PI * 2, balls = [], mouse = {down:false,x:0,y:0};
+var canvas, ctx, TWO_PI = Math.PI * 2, balls = [];
 
 window.requestAnimFrame =
     window.requestAnimationFrame;
+
+
+
+window.onload = function () {
+    canvas = document.getElementById('myCanvas');
+    ctx = canvas.getContext('2d');  
+    canvas.width = 300;
+    canvas.height = 500;
+    getAllCurrency();
+    update();
+}
+
+
+
+// Data Loading and produce balls
+function getAllCurrency() {
+    var request = new XMLHttpRequest();
+    request.open('GET','http://www.apilayer.net/api/live?access_key=fb1ecebbd1b7da06cb66ade116d20658&format=1');
+    request.onload = function() {
+        var data = JSON.parse(this.response).quotes;
+        ['USDXAU', 'USDBTC'].forEach(e => delete data[e]);
+        console.log(data);
+        var country = Object.keys(data);
+        var currencyUSDUarget = Object.values(data);
+        var currencyTargetUSD = currencyUSDUarget.map(function(element) {
+            return (10*Math.sqrt(1/element));
+        });
+        for (i=0; i<currencyTargetUSD.length; i++) add_ball(currencyTargetUSD[i]);
+    }
+
+    request.send();
+}
+
+
+
+
+
+
+
 
 
 var Ball = function(x, y, radius) {
@@ -24,9 +62,9 @@ var Ball = function(x, y, radius) {
     this.radius = radius;
 };
 
-var add_ball = function (x,y,r) {
-      var x = x || Math.random() * (canvas.width - 60) + 30,
-          y = y || Math.random() * (canvas.height - 60) + 30,
+var add_ball = function (r) {
+      var x = Math.random() * (canvas.width - 60) + 30,
+          y = Math.random() * (canvas.height - 60) + 30,
           r = r || 10 + Math.random() * 20,
           s = true,
           i = balls.length;
@@ -137,14 +175,4 @@ var update = function() {
     while (i--) balls[i].draw(ctx);
   
     requestAnimFrame(update);
-}
-window.onload = function () {
-    canvas = document.getElementById('myCanvas');
-    ctx = canvas.getContext('2d');  
-    canvas.width = 400;
-    canvas.height = 800;
-
-    while (NUM_BALLS--) add_ball();
-    update();
-
 }
