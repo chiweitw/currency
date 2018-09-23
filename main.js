@@ -3,6 +3,7 @@ var DAMPING = 0.2,
     MOUSE_SIZE = 100,
     SPEED = 0.2;
 
+
 var canvas, ctx, TWO_PI = Math.PI * 2, balls = [];
 
 window.requestAnimFrame =
@@ -13,13 +14,27 @@ window.requestAnimFrame =
 window.onload = function () {
     canvas = document.getElementById('myCanvas');
     ctx = canvas.getContext('2d');  
-    canvas.width = 800;
+    canvas.width = 400;
     canvas.height = 800;
     getAllCurrency();
     update();
 }
+  
+var flagShow = document.getElementById("flagShow");
+flagShow.addEventListener("click", () => {
+    flag();
+});
 
 
+function flag() {
+    console.log("HEY")
+    output = '';
+    console.log(balls.length);
+    for (i=0; i<balls.length; i++) {
+        output += `<a href="#" id="${balls[i].id}"><img src="https://s.xe.com/themes/xe/images/flags/big/${balls[i].id.slice(3, 6).toLowerCase()}.png" alt="${balls[i].id}"></a>`
+    }   
+    document.querySelector(".flags").innerHTML = output;
+}
 
 // Data Loading and produce balls
 function getAllCurrency() {
@@ -31,20 +46,14 @@ function getAllCurrency() {
         var country = Object.keys(data);
         var currencyUSDUarget = Object.values(data);
         var currencyTargetUSD = currencyUSDUarget.map(function(element) {
-            return (30*Math.sqrt(1/element));
+            return (22*Math.sqrt(1/element));
         });
-        for (i=0; i<currencyTargetUSD.length; i++) add_ball(currencyTargetUSD[i], country[i]);
+        for (i=0; i<currencyTargetUSD.length; i++) {
+            add_ball(currencyTargetUSD[i], country[i]);
+        }
     }
     request.send();
 }
-
-
-
-
-
-
-
-
 
 var Ball = function(x, y, radius, id) {
 
@@ -64,7 +73,7 @@ var Ball = function(x, y, radius, id) {
 
 var add_ball = function (r, id) {
       var x = Math.random() * (canvas.width - 60) + 30,
-          y = Math.random() * (canvas.height - 60) + 30,
+          y = 30,
           r = r,
           s = true,
           i = balls.length,
