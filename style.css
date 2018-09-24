@@ -10,13 +10,23 @@ body, html {
   justify-content: center; }
 
 canvas {
-  background-color: rgba(102, 255, 255, 0.4);
-  border: 2px solid rgba(255, 255, 255, 0.6);
-  border-top: none;
-  border-radius: 0 0 10px 10px; }
+  position: absolute;
+  background-color: rgba(102, 255, 255, 0.4); }
+
+#myCanvas {
+  left: 50%;
+  transform: translateX(-150px);
+  top: 100px; }
+
+#data {
+  left: 50%;
+  transform: translateX(-150px);
+  top: 100px;
+  background-color: rgba(255, 255, 255, 0); }
 
 .flags {
-  flex-wrap: wrap;
+  position: absolute;
+  left: 1000px;
   width: 400px;
   height: 800px; }
   .flags a {

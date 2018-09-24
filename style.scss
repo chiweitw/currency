@@ -13,15 +13,28 @@ body,html {
 	justify-content: center;
 }
 canvas {
+	position: absolute;
 	background-color: rgba(#66FFFF,0.4);
-	border: 2px solid rgba(255,255,255,0.6);
-	border-top: none;
-	border-radius: 0 0 10px 10px;
+	// border: 2px solid rgba(255,255,255,0.6);
+}
+
+#myCanvas {
+	left: 50%;
+	transform: translateX(-150px);
+	top: 100px;
+}
+#data {
+	left: 50%;
+	transform: translateX(-150px);
+	top: 100px;
+	background-color: rgba(255,255,255,0);
+	// border: 1px solid black;
 }
 
 .flags {
 	
-	flex-wrap: wrap;
+	position: absolute;
+	left: 1000px;
 	width: 400px;
 	height: 800px;
 	a{
