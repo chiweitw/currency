@@ -3,11 +3,26 @@
 	<meta charset="UTF-8">
 	<title>currency</title>
 	<link rel="stylesheet" href="style.css">
+	<link href="https://fonts.googleapis.com/css?family=Roboto" rel="stylesheet">
 </head>
 <body>
-	<div id="canvas"></div>
-	<canvas id="myCanvas"></canvas>
-	<canvas id="data"></canvas>
+
+	<div class="control">
+	  	<h2>Funnel type data visulization: currency</h2>
+	  	<input type="range" min="0" max="2" value="1" class="slider" id="myRange" step="0.01" >
+	  	<button class="btn btn-off" id="switch">Start</button>
+	  	<p>USD per Unit: <span id="value"></span></p>
+	</div>
+	<div id="flags"></div>
+	<div id="canvas-field">
+		<canvas id="myCanvas"></canvas>
+		<canvas id="data"></canvas>
+	</div>
+	
+
+
+
+
 	<script src="main.js"></script>
 </body>
 </html>
