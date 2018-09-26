@@ -1,19 +1,16 @@
-var COEFF = 8,
-    DAMPING = 0.5,
+var DAMPING = 0.9,
     GRAVITY = 0.6,
-    SPEED = 0.3,
-    CR = 1,
-    FILTER = CR*COEFF,
+    SPEED = 0.5,
+    FILTER = 0,
     CANVASWIDTH = 480,
-    CANVASHEIGHT = 578,
+    CANVASHEIGHT = 576,
     theta = Math.atan((CANVASWIDTH - FILTER)/CANVASHEIGHT),
-    SWITCH = 'off';
+    SWITCH = 'off',
+    TARGETUSD = [];
 
 var canvas, ctx, TWO_PI = Math.PI * 2, balls = [];
 
 window.requestAnimFrame = window.requestAnimationFrame;
-
-
 
 var turn = function() {
     var btn = document.getElementById("switch");
@@ -40,8 +37,9 @@ function getAllCurrency() {
         var country = Object.keys(data);
         var currencyUSDUarget = Object.values(data);
         var currencyTargetUSD = currencyUSDUarget.map(function(element) {
-            return (Math.sqrt(1/element)); 
+            return (1/element); 
         });
+        TARGETUSD = currencyTargetUSD;
         for (i=0; i<currencyTargetUSD.length; i++) {
             add_ball(currencyTargetUSD[i], country[i].slice(3, 6));
         }
@@ -78,37 +76,38 @@ function showResults() {
     var canvas = document.getElementById('data');
     var ctx = canvas.getContext('2d'); 
     canvas.width = CANVASWIDTH + 400;
-    canvas.height = CANVASHEIGHT + 500;
+    canvas.height = CANVASHEIGHT;
     var count = 0;
     for (i=0; i<balls.length; i++) {
-        if (balls[i].radius >= FILTER) {
-            var text = balls[i].id.toUpperCase() + ": " + balls[i].value.toFixed(3);
+        if (balls[i].radius*2 >= FILTER) {
+            var diameter = balls[i].radius*2;
+            var text = balls[i].id.toUpperCase() + ": " + diameter.toFixed(3);
             ctx.beginPath();
             ctx.moveTo(balls[i].x, balls[i].y);
             ctx.font = "10px Helvetica";
             ctx.strokeStyle = "rgba(0,0,0,0.3)";   
-            if (count<50) {
-                ctx.lineTo(CANVASWIDTH+10, (count+1)*12);  
+            if (count<40) {
+                ctx.lineTo(CANVASWIDTH+30, (count+1)*14);  
                 ctx.stroke();   
                 ctx.beginPath();
-                ctx.fillText(text, CANVASWIDTH+10, (count+1)*12);
+                ctx.fillText(text, CANVASWIDTH+30, (count+1)*14);
             }
-            else if (count>=50 && count<100) {
-                ctx.lineTo(CANVASWIDTH+90, (count+1-50)*12);
+            else if (count>=40 && count<80) {
+                ctx.lineTo(CANVASWIDTH+110, (count+1-40)*14);
                 ctx.stroke();
                 ctx.beginPath();
-                ctx.fillText(text, CANVASWIDTH+90, (count+1-50)*12);
+                ctx.fillText(text, CANVASWIDTH+110, (count+1-40)*14);
             }
-            else if (count>=100 && count<150) {
-                ctx.lineTo(CANVASWIDTH+170, (count+1-100)*12);
+            else if (count>=80 && count<120) {
+                ctx.lineTo(CANVASWIDTH+190, (count+1-80)*14);
                 ctx.stroke();
                 ctx.beginPath();
-                ctx.fillText(text, CANVASWIDTH+170, (count+1-100)*12);
+                ctx.fillText(text, CANVASWIDTH+190, (count+1-80)*14);
             }
             else {
-                ctx.lineTo(CANVASWIDTH+250, (count+1-150)*12);
+                ctx.lineTo(CANVASWIDTH+270, (count+1-120)*14);
                 ctx.stroke();
-                ctx.fillText(text, CANVASWIDTH+250, (count+1-150)*12);
+                ctx.fillText(text, CANVASWIDTH+270, (count+1-120)*14);
             }
             ctx.fillStyle = "rgba(0,0,0,1)";  
             ctx.stroke();
@@ -116,8 +115,6 @@ function showResults() {
         }
     } 
 }
-
-
 var flagLoad = function() {
     var output = '';
     for (i=0; i<balls.length; i++) {  
@@ -125,38 +122,33 @@ var flagLoad = function() {
     document.getElementById("flags").innerHTML = output;
     }
 }
-
 var flagShow = function () {
     for (i=0; i<balls.length; i++) {
         var flag = document.getElementById(`${balls[i].id}`);
-        if (balls[i].radius >= FILTER) {
+        if (balls[i].radius*2 >= FILTER) {
             flag.setAttribute("style", "opacity: 1;");
         }
         else {
-            flag.setAttribute("style", "opacity: 0.3;");
+            flag.setAttribute("style", "opacity: 0;");
         }
     }
 }
-
-
-
 ///Ball Object///
-var Ball = function(x, y, value, id) {
+var Ball = function(x, y, r, id) {
     this.x = x;
     this.y = y;
     this.px = x;
     this.py = y;
     this.fx = 0;
     this.fy = 0;
-    this.radius = COEFF*value;
-    this.value = value;
+    this.radius = r;
     this.id = id.toLowerCase();
 };
 
 var add_ball = function (value, id) {
-      var x = Math.random() * (canvas.width - 60) + 30,
-          y = 30,
-          r = value,
+      var x = Math.random() * (canvas.width - 100) + 50,
+          y = 200,
+          r = value / 2,
           s = true,
           i = balls.length,
           id = id;
@@ -171,7 +163,7 @@ Ball.prototype.draw = function(ctx) {
     ctx.shadowColor="yellow";
     ctx.fillStyle = 'rgba(255,255,255,1)';
     ctx.fill();
-    ctx.font = "12px helvetica";
+    ctx.font = "14px helvetica";
     ctx.beginPath();
     ctx.fillStyle = 'rgba(0,0,0, 0.8)';
     var text = this.id;
@@ -179,23 +171,17 @@ Ball.prototype.draw = function(ctx) {
 };
 
 Ball.prototype.apply_force = function(delta) {
-
     this.fy += GRAVITY;
-
     this.x += this.fx * delta;
     this.y += this.fy * delta;
-
     this.fx = this.fy = 0;
 };
 
 Ball.prototype.verlet = function() {
-
     var nx = (this.x * 2) - this.px;
     var ny = (this.y * 2) - this.py;
-
     this.px = this.x;
     this.py = this.y;
-
     this.x = nx;
     this.y = ny;
 };
@@ -224,21 +210,15 @@ var resolve_collisions = function(ip) {
                 ball_1.y -= depth_y * 0.5;
                 ball_2.x += depth_x * 0.5;
                 ball_2.y += depth_y * 0.5;
-
                 if (ip) {
-
                     var pr1 = DAMPING * (diff_x*vel_x1+diff_y*vel_y1) / length,
                         pr2 = DAMPING * (diff_x*vel_x2+diff_y*vel_y2) / length;
-
                     vel_x1 += pr2 * diff_x - pr1 * diff_x;
                     vel_x2 += pr1 * diff_x - pr2 * diff_x;
-
                     vel_y1 += pr2 * diff_y - pr1 * diff_y;
                     vel_y2 += pr1 * diff_y - pr2 * diff_y;
-
                     ball_1.px = ball_1.x - vel_x1;
                     ball_1.py = ball_1.y - vel_y1;
-
                     ball_2.px = ball_2.x - vel_x2;
                     ball_2.py = ball_2.y - vel_y2;
                 }
@@ -246,19 +226,18 @@ var resolve_collisions = function(ip) {
         }
     }
 }
-
 var check_walls = function() {
     var i = balls.length;
 
     while (i--) {
+        var radius = balls[i].radius;
         var ball = balls[i];
-        var d = ball.x*Math.cos(theta)-ball.y*Math.sin(theta)-ball.radius;
-        var d2 = (CANVASWIDTH-ball.x)*Math.cos(theta)-ball.y*Math.sin(theta)-ball.radius;
-        var d3 = ball.x*Math.cos(theta)-(CANVASHEIGHT-ball.y)*Math.sin(theta)-ball.radius;
-        var d4 = (CANVASWIDTH-ball.x)*Math.cos(theta)-(CANVASHEIGHT-ball.y)*Math.sin(theta)-ball.radius;
+        var d = ball.x*Math.cos(theta)-ball.y*Math.sin(theta)-radius;
+        var d2 = (CANVASWIDTH-ball.x)*Math.cos(theta)-ball.y*Math.sin(theta)-radius;
+        var d3 = ball.x*Math.cos(theta)-(CANVASHEIGHT-ball.y)*Math.sin(theta)-radius;
+        var d4 = (CANVASWIDTH-ball.x)*Math.cos(theta)-(CANVASHEIGHT-ball.y)*Math.sin(theta)-radius;
         var hc = 0.5*CANVASHEIGHT - (ball.radius - 0.5*FILTER*Math.cos(theta))/Math.sin(theta);
-
-        if (ball.y <= CANVASHEIGHT*0.5){
+        if (ball.y <= CANVASHEIGHT/2){
             if (d<0) {
                 var vel_x = ball.px - ball.x;
                 ball.x -= d*Math.cos(theta);
@@ -275,7 +254,8 @@ var check_walls = function() {
                 ball.y -= d2*Math.sin(theta);
                 ball.py = ball.y - vel_y * DAMPING;
             }
-        } else {
+        } 
+        else if (ball.y > CANVASHEIGHT/2){
             if (d3<0) {
                 var vel_x = ball.px - ball.x;
                 ball.x -= d3*Math.cos(theta);
@@ -292,39 +272,33 @@ var check_walls = function() {
                 ball.y += d4*Math.sin(theta);
                 ball.py = ball.y - vel_y * DAMPING;
             }
+        }  
+        if (ball.y > hc && radius >= FILTER/2) {
+            var diff = ball.y - hc;
+            var vel_y = ball.py - ball.y;
+            ball.y -= diff ; 
+            ball.py = ball.y + vel_y * DAMPING;
         }
-
-       
-        while (ball.y > hc && ball.radius >= FILTER) {
-                var diff = ball.y - hc;
-                var vel_y = ball.py - ball.y;
-                ball.y -= diff ; 
-                ball.py = ball.y + vel_y * DAMPING;
-        }
-
-
-        if (ball.x < ball.radius) {
+        if (ball.x < radius) {
             var vel_x = ball.px - ball.x;
             ball.x = ball.radius;
             ball.px = ball.x - vel_x * DAMPING;
-        } else if (ball.x + ball.radius > canvas.width) {
+        } else if (ball.x + radius > canvas.width) {
             var vel_x = ball.px - ball.x;
             ball.x = canvas.width - ball.radius;
             ball.px = ball.x - vel_x * DAMPING;
         }
-        if (ball.y < ball.radius) {
+        if (ball.y < radius) {
             var vel_y = ball.py - ball.y;
             ball.y = ball.radius;
             ball.py = ball.y - vel_y * DAMPING;
-        } else if (ball.y + ball.radius > canvas.height) {
+        } else if (ball.y + radius > canvas.height) {
             var vel_y = ball.py - ball.y;
             ball.y = canvas.height - ball.radius;
             ball.py = ball.y - vel_y * DAMPING;
-        }      
+        }     
     }
 }
-
-
 ///Derecorating///
 function beautify() {
     var canvas = document.getElementById('data');
@@ -341,7 +315,6 @@ function beautify() {
     ctx.fillStyle = "rgba(0,0,0,0.3)";
     ctx.fill();
 }
-
 ///Component///
 var slider = document.getElementById("myRange");
 var output = document.getElementById("value");
@@ -349,10 +322,9 @@ output.innerHTML = slider.value;
 
 slider.oninput = function() {
   output.innerHTML = this.value;
-  FILTER = this.value*COEFF;
+  FILTER = this.value;
 
 }
-
 window.onload = function () {
     canvas = document.getElementById('myCanvas');
     ctx = canvas.getContext('2d');  

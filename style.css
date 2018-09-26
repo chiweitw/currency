@@ -2,58 +2,71 @@ body, html {
   background: #0080FF;
   font-family: 'Roboto', sans-serif; }
 
-#canvas-field {
+h2 {
+  color: #000080;
+  font-size: 24px;
+  margin: 30px 0 5px 0;
+  padding: 0;
+  text-align: center; }
+
+.control {
+  padding: 15px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  position: relative;
+  left: 50%;
+  transform: translateX(-50%); }
+  .control input {
+    width: 200px; }
+  .control .btn {
+    appearance: none;
+    font-size: 14px;
+    border-radius: 2px;
+    border: none;
+    box-shadow: 1px 1px 2px rgba(0, 0, 0, 0.4);
+    cursor: pointer;
+    margin: 15px;
+    padding: 5px 10px 5px 10px;
+    outline: 0;
+    width: 50px; }
+    .control .btn.btn-off {
+      background-color: #1ECF39;
+      color: rgba(255, 255, 255, 0.9); }
+    .control .btn.btn-on {
+      background-color: #A70F2C;
+      color: rgba(255, 255, 255, 0.9); }
+  .control p {
+    text-align: center;
+    font-size: 12px;
+    line-height: 24px;
+    margin: 0;
+    padding: 0;
+    color: rgba(255, 255, 255, 0.7); }
+
+#flags {
   position: absolute;
-  width: 800px;
-  left: 30px;
+  left: 50%;
+  transform: translateX(-240px);
+  width: 502px; }
+  #flags img {
+    opacity: 0.3;
+    box-shadow: 1px 1px 2px rgba(0, 0, 0, 0.8); }
+
+#canvas-field {
   padding: 0; }
   #canvas-field canvas {
     background-color: rgba(102, 255, 255, 0.4); }
     #canvas-field canvas#myCanvas {
       position: absolute;
-      background-color: transparent; }
+      background-color: transparent;
+      left: 50%;
+      transform: translateX(-240px); }
     #canvas-field canvas#data {
       position: absolute;
-      background-color: rgba(255, 255, 255, 0); }
-
-.control {
-  padding: 15px;
-  height: 60px;
-  margin: 15px 0 40px 0; }
-  .control h2 {
-    color: #000080;
-    font-size: 24px;
-    margin: 0 0 10px 0;
-    padding: 0; }
-  .control .btn {
-    appearance: none;
-    font-size: 14px;
-    border-radius: 5px;
-    border: none;
-    box-shadow: 1px 1px 2px rgba(0, 0, 0, 0.4);
-    margin: 3px;
-    width: 50px;
-    cursor: pointer; }
-    .control .btn.btn-off {
-      background-color: #20A826;
-      color: rgba(0, 0, 0, 0.8); }
-    .control .btn.btn-on {
-      background-color: #A70F2C;
-      color: rgba(255, 255, 255, 0.9); }
-  .control p {
-    font-size: 18px;
-    line-height: 24px;
-    margin: 0;
-    padding: 0;
-    color: rgba(255, 255, 255, 0.7);
-    margin-left: 5px; }
-
-#flags {
-  position: absolute;
-  left: 30px;
-  width: 502px; }
-
-img {
-  opacity: 0.3; }
+      background-color: rgba(255, 255, 255, 0);
+      left: 50%;
+      transform: translateX(-240px); }
 
 /*# sourceMappingURL=style.css.map */
